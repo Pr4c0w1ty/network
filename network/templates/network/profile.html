@@ -1,0 +1,49 @@
+{% extends "network/layout.html" %}
+
+
+{% block body %}
+    <h1>{{username}}</h1>
+    <div class="container">
+        <h4>Followers: {{ followers.count}}</h4>
+        <h4>Following: {{ following.count}} </h4>
+        {% if user.is_authenticated %}
+            {% if user != user_profile %}
+                {% if is_following %}
+                    <form action="{% url 'unfollow' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="userfollow" value="{{ user_profile }}">
+                        <button type="submit" class="btn btn-danger">Unfollow</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'follow' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="userfollow" value="{{ user_profile }}">
+                        <button type="submit" class="btn btn-success">Follow</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    {% if user.is_authenticated %}
+    <div class="my-3 mx-5"> 
+        <h2>New Post</h2>
+        <form action="{% url 'new_post' %}" method="post">
+            {% csrf_token %}
+            <textarea name="content" cols="70"></textarea>
+            <br>
+            <input type="submit" value="Post" class="btn btn-primary">
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="all_posts">
+        {% for post in post_of_page %}
+            <div class="post">
+                <h3>@{{ post.user }}</h3>
+                <p>{{ post.content }}</p>
+                <p>{{ post.timestamp }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+{% endblock %}

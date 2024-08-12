@@ -2,36 +2,27 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
-    # Users that the user is following
-    following = models.ManyToManyField("self", symmetrical=False, blank=True, related_name="following_of_user")
-    # Users that follow the user
-    followers = models.ManyToManyField("self", symmetrical=False, blank=True, related_name="followers_of_user")
+    pass
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
-    content = models.TextField(blank=True)
+    content = models.CharField(max_length=280, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "user": self.user.username,
             "content": self.content,
-            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
-            "likes": self.likes.count()
+            "timestamp": self.timestamp.strftime("%b %d %Y, %H:%M:%S"),
         }
+
+    def __str__(self):
+        return f"Post {self.id} made by {self.user} posted {self.content} on {self.timestamp.strftime('%b %d %Y, %H:%M:%S')}"
     
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    content = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="usr_following")
+    user_follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="usr_followed")
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "user": self.user.username,
-            "content": self.content,
-            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
-        }
+    def __str__(self):
+        return f"{self.user} is following {self.user_follower}"
