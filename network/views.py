@@ -132,3 +132,16 @@ def unfollow(request):
     user_id = userfollowdata.id
     return HttpResponseRedirect(reverse('profile', kwargs={'user_id': user_id}))
 
+def following(request):
+    current_user = User.objects.get(pk=request.user.id)
+    followingusers = Follow.objects.filter(user=current_user)
+    all_posts = Post.objects.filter(user__in=[user.user_follower for user in followingusers]).order_by("id").reverse()
+
+    # Pagination
+    paginator = Paginator(all_posts, 10)
+    page_number = request.GET.get('page')
+    post_of_page = paginator.get_page(page_number)
+
+    return render(request, "network/following.html", {
+        "post_of_page": post_of_page
+    })

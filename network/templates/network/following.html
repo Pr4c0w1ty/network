@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+
+
+{% block body %}
+
+    <div class="all_posts">
+        {% for post in post_of_page %}
+            <div class="post">
+                <a href="{% url 'profile' user_id=post.user.id %}"><h3>@{{ post.user }}</h3></a>
+                <p>{{ post.content }}</p>
+                <p>{{ post.timestamp }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+{% endblock %}
