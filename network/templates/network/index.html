@@ -23,17 +23,13 @@
         .then(result => {
             content.innerHTML = textareaValue;
             //hide modal
-            modal.classList.remove('show');
-            modal.setAttribute('aria-hidden', 'true');
-            modal.setAttribute('style', 'display: none');
+            const modalElement = document.getElementById(`modal_edit_post_${id}`);
+            console.log(modalElement);
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            console.log(modalInstance);
+            modalInstance.hide();
+            
 
-            //get modal-backdrop
-            const modal_backdrop = document.getElementsByClassName('modal-backdrop');
-
-            //remove modal-backdrop
-            for (let i = 0; i < modal_backdrop.length; i++) {
-                document.body.removeChild(modal_backdrop[i]);
-            }
         })
         }
     </script>
@@ -65,6 +61,7 @@
                         </button>
                         
                         <!-- Modal -->
+                        
                         <div class="modal fade" id="modal_edit_post_{{ post.id}}" tabindex="-1" aria-labelledby="modal_edit_post_{{ post.id}}" aria-hidden="true">
                             <div class="modal-dialog">
                             <div class="modal-content">
@@ -80,7 +77,7 @@
                                 <button type="button" class="btn btn-success" onclick="submitHandler({{ post.id }})">Save changes</button>
                                 </div>
                             </div>
-                            </div>
+                            
                         </div>
                     {% endif %}
                 {% endif %}
