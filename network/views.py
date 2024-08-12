@@ -2,13 +2,12 @@ import datetime
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import  HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import User, Post, Follow
-
+import json
 
 def index(request):
     all_posts = Post.objects.all().order_by("id").reverse()
@@ -85,6 +84,14 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
+def edit(request, post_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        editpost = Post.objects.get(pk=post_id)
+        editpost.content = data["content"]
+        editpost.save()
+        return JsonResponse({"message": "Post edited."}, status=201)
+        
 
 def register(request):
     if request.method == "POST":
@@ -133,6 +140,7 @@ def unfollow(request):
     return HttpResponseRedirect(reverse('profile', kwargs={'user_id': user_id}))
 
 def following(request):
+
     current_user = User.objects.get(pk=request.user.id)
     followingusers = Follow.objects.filter(user=current_user)
     all_posts = Post.objects.filter(user__in=[user.user_follower for user in followingusers]).order_by("id").reverse()
