@@ -6,20 +6,43 @@ from django.http import  HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
-from .models import User, Post, Follow
+from .models import User, Post, Follow, Like
 import json
+from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     all_posts = Post.objects.all().order_by("id").reverse()
-
     # Pagination
     paginator = Paginator(all_posts, 10)
     page_number = request.GET.get('page')
     post_of_page = paginator.get_page(page_number)
+    all_likes = Like.objects.filter(user=request.user)
+    who_you_liked = list(set([like.post.id for like in all_likes]))
 
     return render(request, "network/index.html", {
-        "post_of_page": post_of_page
+        "all_posts": all_posts,
+        "post_of_page": post_of_page,
+        "who_you_liked": who_you_liked,
     })
+
+def remove_like(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+        user = request.user  # Already authenticated due to the decorator
+        like = Like.objects.get(user=user, post=post)
+        like.delete()
+        return JsonResponse({"message": "Like removed."})
+    except ObjectDoesNotExist as e:
+        return JsonResponse({"error": str(e)}, status=404)  # Object not found
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)  # Other exceptions
+
+def add_like(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    user = User.objects.get(pk=request.user.id)
+    new_like = Like(user=user, post=post)
+    new_like.save()
+    return JsonResponse({"message": "Like added."})
 
 def new_post(request):
     if request.method == "POST":

@@ -8,6 +8,38 @@
             const parts = value.split(`; ${name}=`);
             if (parts.length == 2) return parts.pop().split(';').shift();
         }
+    function likeHandler(id, who_you_liked) {
+    if(who_you_liked.indexOf(id) >= 0){
+        var isLiked = true;
+    } else {
+        var isLiked = false;
+    }
+    if(isLiked === true){
+        fetch(`/remove_like/${id}`)
+        .then(response => response.json)
+        .then(result => {
+            isLiked = false;
+            updateButton(id, who_you_liked);
+        })
+    } else {
+        fetch(`/add_like/${id}`)
+        .then(response => response.json)
+        .then(result => {
+            isLiked = true;
+            updateButton(id, who_you_liked);
+        })
+    }
+    }
+function updateButton(postId, who_you_liked) {
+    const button = document.getElementById(postId);
+    if (isLiked) {
+        button.className = 'btn btn-danger';
+        button.textContent = 'Unlike';
+    } else {
+        button.className = 'btn btn-success';
+        button.textContent = 'Like';
+    }
+}
 
         function submitHandler(id) {
             const textareaValue = document.getElementById(`textarea_${id}`).value;
@@ -24,9 +56,7 @@
             content.innerHTML = textareaValue;
             //hide modal
             const modalElement = document.getElementById(`modal_edit_post_${id}`);
-            console.log(modalElement);
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
-            console.log(modalInstance);
             modalInstance.hide();
             
 
@@ -74,16 +104,23 @@
                                 </div>
                                 <div class="modal-footer">
                                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-success" onclick="submitHandler({{ post.id }})">Save changes</button>
+                                <button type="button" class="btn btn-success" onclick="submitHandler(`{{ post.id }}`)">Save changes</button>
                                 </div>
                             </div>
                             
                         </div>
                     {% endif %}
+                    {% if post.id in who_you_liked %}
+        <button class="btn btn-danger" onclick="likeHandler(`{{ post.id }}`, `{{ who_you_liked }}`)" id="{{ post.id }}">Unlike</button>
+    {% else %}
+        <button class="btn btn-success" onclick="likeHandler(`{{ post.id }}`, `{{ who_you_liked }}`)" id="{{ post.id }}">Like</button>
+    {% endif %}
+    {{ who_you_liked }}
                 {% endif %}
             </div>
         {% endfor %}
     </div>
+    
     <nav aria_label="Page navigation example">
         <ul class="pagination">
             {% if post_of_page.has_previous %}
