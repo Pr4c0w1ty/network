@@ -12,13 +12,15 @@ from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     all_posts = Post.objects.all().order_by("id").reverse()
-    # Pagination
     paginator = Paginator(all_posts, 10)
     page_number = request.GET.get('page')
     post_of_page = paginator.get_page(page_number)
-    all_likes = Like.objects.filter(user=request.user)
-    who_you_liked = list(set([like.post.id for like in all_likes]))
-
+    if request.user.is_authenticated:
+        all_likes = Like.objects.filter(user=request.user)
+        who_you_liked = list(set([like.post.id for like in all_likes]))
+    else:
+        who_you_liked = []
+        
     return render(request, "network/index.html", {
         "all_posts": all_posts,
         "post_of_page": post_of_page,

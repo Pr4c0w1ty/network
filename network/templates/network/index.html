@@ -115,7 +115,6 @@ function updateButton(postId, who_you_liked) {
     {% else %}
         <button class="btn btn-success" onclick="likeHandler(`{{ post.id }}`, `{{ who_you_liked }}`)" id="{{ post.id }}">Like</button>
     {% endif %}
-    {{ who_you_liked }}
                 {% endif %}
             </div>
         {% endfor %}
