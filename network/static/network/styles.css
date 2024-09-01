@@ -3,4 +3,13 @@
     margin-bottom: 10px;
     size-adjust: 10px;
     color: red;
+    padding-top: 15px;
+    border: 15px;
+    background-color: aqua;
+    position: relative;
+    width:auto;
+}
+.all_posts {
+    padding: 25px;
+    background-color: rgb(246, 158, 158);
 }

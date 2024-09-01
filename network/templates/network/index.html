@@ -30,7 +30,7 @@
         })
     }
     }
-function updateButton(postId, who_you_liked) {
+    function updateButton(postId, who_you_liked) {
     const button = document.getElementById(postId);
     if (isLiked) {
         button.className = 'btn btn-danger';
@@ -41,7 +41,7 @@ function updateButton(postId, who_you_liked) {
     }
 }
 
-        function submitHandler(id) {
+    function submitHandler(id) {
             const textareaValue = document.getElementById(`textarea_${id}`).value;
             const content = document.getElementById(`content_${id}`);
             const modal = document.getElementById(`modal_edit_post_${id}`);
@@ -66,13 +66,13 @@ function updateButton(postId, who_you_liked) {
 
     <h1>All Posts</h1>
     {% if user.is_authenticated %}
-    <div class="my-3 mx-5"> 
+    <div class="my-3 mx-5" id="newpost"> 
         <h2>New Post</h2>
         <form action="{% url 'new_post' %}" method="post">
             {% csrf_token %}
             <textarea name="content" cols="70"></textarea>
             <br>
-            <input type="submit" value="Post" class="btn btn-primary">
+            <input type="submit" value="Post" class="btn btn-primary" >
         </form>
     </div>
     {% endif %}
